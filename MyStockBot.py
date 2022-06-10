@@ -1,15 +1,16 @@
-import os, discord, pandas
+import os, discord
 from dotenv import load_dotenv
-from discord.ext import commands
 from alpha_vantage.timeseries import TimeSeries
 import matplotlib.pyplot as plt
-
 
 
 load_dotenv()
 DISCORD_TOKEN = os.getenv('DISCORD_TOKEN')
 GUILD = os.getenv('DISCORD_GUILD')
 AV_TOKEN = os.getenv('AV_TOKEN')
+
+BACKGROUND = 0,0,0,0.9
+LINE = 0,255,0,0.9
 
 client = discord.Client()
 ts = TimeSeries(key = str(AV_TOKEN), output_format = 'pandas')
@@ -31,7 +32,12 @@ async def on_message(message):
        data, meta_data = ts.get_intraday(symbol=cleaned[1],interval='1min', outputsize='full')
        data['4. close'].plot()
        plt.title("Intraday Times Series for the " + cleaned[1] + " stock (1 min)")
-       plt.show()
+       plt.savefig(cleaned[1] + '.png', bbox_inches='tight', dpi=80)
+       file = discord.File(str(cleaned[1]))
+       embed = discord.Embed()
+       embed.set_image(url='attachment://' + str(cleaned[1]) + '.png')
+       await message.channel.send(embed=embed, file=file)
+
 
 
 client.run(DISCORD_TOKEN)
