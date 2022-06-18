@@ -1,4 +1,4 @@
-import os, discord
+import os, discord, io
 from dotenv import load_dotenv
 from alpha_vantage.timeseries import TimeSeries
 import matplotlib.pyplot as plt
@@ -32,8 +32,9 @@ async def on_message(message):
        data, meta_data = ts.get_intraday(symbol=cleaned[1],interval='1min', outputsize='full')
        data['4. close'].plot()
        plt.title("Intraday Times Series for the " + cleaned[1] + " stock (1 min)")
-       plt.savefig(cleaned[1] + '.png', bbox_inches='tight', dpi=80)
-       file = discord.File(str(cleaned[1]))
+       with open(str(cleaned[1]) + '.png', "ab") as cleaned[1]:
+        plt.savefig(cleaned[1], format='png', bbox_inches='tight', dpi=80, facecolor='k', edgecolor='g')
+       file = discord.File('C:\VSCode_Projects\MyStockBot\GOOGL.png')
        embed = discord.Embed()
        embed.set_image(url='attachment://' + str(cleaned[1]) + '.png')
        await message.channel.send(embed=embed, file=file)
